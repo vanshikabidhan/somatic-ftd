@@ -17,3 +17,12 @@ print(ncol(seu_neurons))
 avg_all <- rowMeans(GetAssayData(seu_neurons, assay = "RNA", layer = "data"))
 avg_df <- data.frame(gene = names(avg_all),avg_exp = avg_all) %>% mutate(decile = ntile(avg_exp, 10))
 avg_df[genes, ]
+
+# gene   avg_exp decile
+# TARDBP  0.7200307      9
+# UNC13A  2.9348601     10
+# TET2  1.4292749     10
+# OPTN  1.5807068     10
+# TBK1  1.2853958     10
+# TMEM106B  1.4675260     10
+# GRN 0.1660945      7
