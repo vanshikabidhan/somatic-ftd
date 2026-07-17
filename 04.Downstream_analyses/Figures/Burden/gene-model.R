@@ -54,6 +54,10 @@ print(check_overdispersion(fit_full)) # No overdispersion detected
 summary(fit_full)
 # Strong effect of age at death on the mutation burden, Beta = -0.0073532, P_value = 0.000194
 
+sim_full <- simulateResiduals(fit_full, n=1000)
+testZeroInflation(sim_full)
+plotResiduals(sim_full)
+
 # Run interaction 
 fit_interaction <- glmmTMB(
   n_count ~ Condition * AAD_centered + Sex + median_DP + Hemisphere +
@@ -194,6 +198,8 @@ for (f in files) {
   assign(obj_name, fit, envir = .GlobalEnv)   
   fits[[gene]] <- fit   
   print(check_overdispersion(fit))
+  sim <- simulateResiduals(fit, n=1000)
+  print(testZeroInflation(sim))
   print(summary(fit))
 }
 
@@ -278,7 +284,7 @@ p <- ggplot(effects, aes(x = RR, y = reorder(gene, RR), color = sig)) +
     vjust = -0.5, size = 4, color = "Red"
   ) +
   coord_cartesian(clip = "off") +
-  theme_set(theme_classic(base_size = 14, base_family = "DejaVu Sans")) + 
+  theme_classic(base_size = 14, base_family = "DejaVu Sans") + 
   theme(
     # axis labels
     axis.title.x     = element_text(size = 18, margin = margin(t = 10)),
@@ -868,13 +874,13 @@ p <- ggplot(df, aes(Age_at_Death, burden_rate, fill = Condition)) +
     axis.line         = element_line(linewidth = 1.1),
     legend.title      = element_text(size = 14),
     legend.text       = element_text(size = 14),
-    #legend.position   = "bottom_left",
+    legend.position   = "none",
     plot.background   = element_rect(fill = "transparent", colour = NA),
     panel.background  = element_rect(fill = "transparent", colour = NA)
   )
 p
-ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure4_legend.svg", plot = p, width = 9.5, height = 7, units = "in", bg = "transparent")
-ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure4_legend.png", plot = p, width = 9.5, height = 7, units = "in", dpi = 300, bg = "transparent")
+ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure4_nolegend.svg", plot = p, width = 9.5, height = 7, units = "in", bg = "transparent")
+ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure4_nolegend.png", plot = p, width = 9.5, height = 7, units = "in", dpi = 300, bg = "transparent")
 
 ############################################################################
 # Comparison for all genes together (19,102 variants)
