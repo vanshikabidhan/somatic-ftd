@@ -4,17 +4,17 @@ Repository for analysis of somatic variants in FTLD-TDP type C (based on the Mis
 
 ## Overview
 
-This repository contains the analysis pipeline used to call, annotate, and characterize somatic variants from single-cell amplicon sequencing (Mission Bio Tapestri) data reported in the manuscript. The pipeline runs in four stages, reflected by the numbered top-level directories:
+This repository contains the analysis pipeline used to call, annotate, and characterize somatic variants across a targeted gene panel from single-nucleus amplicon sequencing (Mission Bio Tapestri) of NeuN+ nuclei isolated from the superior temporal gyrus of FTLD-TDP type C patients and neuropathological controls. The pipeline comprises four main steps, corresponding to the numbered top-level directories:
 
-1. **Run setup** — prepare and launch the Tapestri sequencing pipeline
-2. **Demultiplexing** — assign single-cell barcodes to donors/samples
-3. **Variant annotation & filtering** — integrate pools, annotate variants, and apply QC/statistical filters
+1. **Run setup** — data preparation and launching the Tapestri sequencing pipeline
+2. **Demultiplexing** — assign single-cell barcodes to donors from each pooled run
+3. **Variant annotation & filtering** — integrate pools, annotate variants, and apply QC for selecting high-confidence variants
 4. **Downstream analyses** — generate manuscript figures and supplemental analyses
 
 ## Repository Structure
 
 ```
-somatic-ftd/
+somatic-ftd/∂
 ├── 01.Tapestri_run/
 │   ├── data_prep/
 │   │   ├── make_configs.sh
