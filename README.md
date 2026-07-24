@@ -14,11 +14,11 @@ This repository contains the analysis pipeline used to call, annotate, and chara
 ## Repository Structure
 
 ```
-somatic-ftd/∂
+somatic-ftd/
 ├── 01.Tapestri_run/
 │   ├── data_prep/
 │   │   ├── make_configs.sh
-│   │   └── merge_bams.sh
+│   │   ├── merge_bams.sh
 │   │   └── liftover
 │   │       ├── liftover_demux_vars.sh
 │   │       └── liftover_panel_files.sh
