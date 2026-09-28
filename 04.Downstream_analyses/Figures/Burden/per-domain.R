@@ -213,6 +213,109 @@ p_bar <- ggplot() +
 p_bar
 save_plot(p_bar, "panels/panel4/figure1", width = 9.5, height = 7)
 
+
+# # cld view
+# library(multcompView)
+# 
+# domain_levels <- c("NTD", "RRM2", "RRM1", "CTD")
+# 
+# emm    <- emmeans(fit_sel, ~ domain, type = "response", offset = log(1) + log(1))
+# emm_df <- as.data.frame(summary(emm, infer = TRUE, type = "response", adjust = "Bonferroni")) %>%
+#   mutate(domain = factor(domain, levels = domain_levels))
+# 
+# df_domain <- df %>%
+#   filter(domain %in% domain_levels) %>%
+#   mutate(burden_norm = n_count / (total_cells * domain_length),
+#          domain = factor(domain, levels = domain_levels))
+# 
+# # Pairwise contrasts (already Bonferroni-adjusted) -> compact letter display
+# pairs_res <- pairs(emm, adjust = "Bonferroni") %>%
+#   as_tibble() %>%
+#   mutate(contrast = as.character(contrast)) %>%
+#   separate(contrast, into = c("g1", "g2"), sep = " / ") %>%
+#   mutate(g1 = trimws(g1), g2 = trimws(g2))
+# 
+# p_vec   <- setNames(pairs_res$p.value, paste(pairs_res$g1, pairs_res$g2, sep = "-"))
+# cld_out <- multcompLetters(p_vec, threshold = 0.05)   # threshold applies to your already-adjusted p-values
+# 
+# # Per-domain label height: clears both the CI and any outlier points in that group
+# domain_max <- df_domain %>%
+#   group_by(domain) %>%
+#   summarise(max_val = max(burden_norm, na.rm = TRUE))
+# 
+# cld_df <- tibble(domain = names(cld_out$Letters), cld = cld_out$Letters) %>%
+#   mutate(domain = factor(domain, levels = domain_levels)) %>%
+#   left_join(emm_df %>% select(domain, asymp.UCL), by = "domain") %>%
+#   left_join(domain_max, by = "domain") %>%
+#   mutate(ceiling  = pmax(asymp.UCL, max_val, na.rm = TRUE),
+#          y_pos    = ceiling + 0.1 * max(ceiling))   # uniform 5% pad above each group's own ceiling
+# 
+# p_bar <- ggplot() +
+#   geom_col(data = emm_df,
+#            aes(x = domain, y = response),
+#            fill = "grey80", colour = "black", linewidth = 0.5, width = 0.6) +
+#   geom_jitter(data = df_domain,
+#               aes(x = domain, y = burden_norm),
+#               width = 0.15, size = 1.5, alpha = 0.5, colour = "black") +
+#   geom_errorbar(data = emm_df,
+#                 aes(x = domain, ymin = asymp.LCL, ymax = asymp.UCL),
+#                 width = 0.15, linewidth = 1, colour = "#A32D2D") +
+#   geom_point(data = emm_df,
+#              aes(x = domain, y = response),
+#              size = 2, colour = "#A32D2D") +
+#   geom_text(data = cld_df,
+#             aes(x = domain, y = y_pos, label = cld),
+#             size = 5, fontface = "bold") +
+#   scale_y_continuous(
+#     labels = function(x) x * 1e4,
+#     limits = c(0, max(cld_df$y_pos) * 1.05),
+#     expand = expansion(mult = c(0, 0)),
+#     name   = expression("Length-normalised mutational burden (×10"^-4*")")
+#   ) +
+#   labs(x = "TDP-43 domain") +
+#   theme_custom() +
+#   theme(axis.text.x = element_text(angle = 45, hjust = 1))
+# p_bar
+# save_plot(p_bar, "panels/panel4/figure1_cld", width = 9.5, height = 7)
+
+
+## No significance bars
+domain_levels <- c("NTD", "RRM2", "RRM1", "CTD")
+
+emm    <- emmeans(fit_sel, ~ domain, type = "response", offset = log(1) + log(1))
+emm_df <- as.data.frame(summary(emm, infer = TRUE, type = "response", adjust = "Bonferroni")) %>%
+  mutate(domain = factor(domain, levels = domain_levels))
+
+df_domain <- df %>%
+  filter(domain %in% domain_levels) %>%
+  mutate(burden_norm = n_count / (total_cells * domain_length),
+         domain = factor(domain, levels = domain_levels))
+
+p_bar <- ggplot() +
+  geom_col(data = emm_df,
+           aes(x = domain, y = response),
+           fill = "grey80", colour = "black", linewidth = 0.5, width = 0.6) +
+  geom_jitter(data = df_domain,
+              aes(x = domain, y = burden_norm),
+              width = 0.15, size = 1.5, alpha = 0.5, colour = "black") +
+  geom_errorbar(data = emm_df,
+                aes(x = domain, ymin = asymp.LCL, ymax = asymp.UCL),
+                width = 0.15, linewidth = 1, colour = "#A32D2D") +
+  geom_point(data = emm_df,
+             aes(x = domain, y = response),
+             size = 2, colour = "#A32D2D") +
+  scale_y_continuous(
+    labels = function(x) x * 1e4,
+    limits = c(0, NA),
+    expand = expansion(mult = c(0, 0.05)),
+    name   = expression("Length-normalised mutational burden (×10"^-4*")")
+  ) +
+  labs(x = "TDP-43 domain") +
+  theme_custom() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+p_bar
+
+save_plot(p_bar, "panels/panel4/figure1_nosig", width = 9.5, height = 7)
 # =============================================================================
 # Forest plot — CTD-referenced ratios
 # =============================================================================
