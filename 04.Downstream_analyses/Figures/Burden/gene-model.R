@@ -269,17 +269,17 @@ p <- ggplot(effects, aes(x = RR, y = reorder(gene, RR), color = sig)) +
   geom_point(size = 3) +
   scale_color_manual(values = c("p < 0.05" = "Red", "ns" = "#457B9D")) +
   labs(
-    x = "Incidence rate ratio per year (95% CI)",
+    x = "exp(β) per year of age at death (95% CI)",
     y = NULL,
     color = NULL
   ) +
   geom_text(
     data = effects[effects$sig == "p < 0.05", ],
     aes(x = effects[effects$sig == "p < 0.05", "RR"],
-        label = sprintf("IRR=%.3f (%.1f%% %s/year)\np_adj=%.3f",
+        label = sprintf("exp(β)=%.3f (%.1f%% %s)\np_adj=%.3f", #/year
                         RR,
                         abs((RR - 1) * 100),
-                        ifelse(RR < 1, "decrease", "increase"),
+                        ifelse(RR < 1, "reduced burden", "increased burden"),
                         p_adj)),
     vjust = -0.5, size = 4, color = "Red"
   ) +
@@ -625,6 +625,50 @@ p <- ggplot() +
 p
 ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure2.svg", plot = p, width = 10.5, height = 7.5, units = "in", bg = "transparent")
 ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure2.png", plot = p, width = 10.5, height = 7.5, units = "in", dpi = 300, bg = "transparent")
+
+
+######################################
+#Plot without p value signs
+p <- ggplot() +
+  geom_col(data = emm_df,
+           aes(x = gene_num, y = response),
+           fill = "grey80", colour = "black", linewidth = 0.5, width = 0.6) +
+  geom_jitter(data = dd %>% mutate(gene_num = match(gene, gene_order)),
+              aes(x = gene_num, y = burden_norm),
+              width = 0.15, size = 1.5, alpha = 0.5, colour = "black") +
+  geom_errorbar(data = emm_df,
+                aes(x = gene_num, ymin = asymp.LCL, ymax = asymp.UCL),
+                width = 0.15, linewidth = 1, colour = "Red") +
+  geom_point(data = emm_df,
+             aes(x = gene_num, y = response),
+             size = 2, colour = "Red") +
+  scale_x_continuous(
+    breaks = seq_along(gene_order),
+    labels = gene_order
+  ) +
+  scale_y_continuous(
+    labels = function(x) x * 1e4,
+    limits = c(0, NA),
+    expand = expansion(mult = c(0, 0.05)),
+    name = expression("Length-normalised mutational burden (×10"^-4*")")
+  ) +
+  theme_classic(base_size = 14, base_family = "DejaVu Sans") +
+  labs(x = "Gene") +
+  theme(
+    axis.title.x      = element_text(size = 18, margin = margin(t = 1)),
+    axis.title.y      = element_text(size = 18, margin = margin(r = 10)),
+    axis.text.x       = element_text(size = 16, angle = 45, hjust = 1),
+    axis.text.y       = element_text(size = 16),
+    axis.ticks        = element_line(linewidth = 1.1),
+    axis.ticks.length = unit(6, "pt"),
+    axis.line         = element_line(linewidth = 1.1),
+    plot.background   = element_rect(fill = "transparent", colour = NA),
+    panel.background  = element_rect(fill = "transparent", colour = NA)
+  )
+p
+ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure2_nosig.svg", plot = p, width = 10.5, height = 7.5, units = "in", bg = "transparent")
+ggsave("/home/AD/vbidhan/study232-missionbio_TDP-C/manuscript_data/figures/panels/panel4/figure2_nosig.png", plot = p, width = 10.5, height = 7.5, units = "in", dpi = 300, bg = "transparent")
+
 
 ######################################
 #Plot the pair differences in mutational burden
