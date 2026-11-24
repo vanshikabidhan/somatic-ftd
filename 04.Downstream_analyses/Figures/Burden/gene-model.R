@@ -313,7 +313,7 @@ genes <- c('TARDBP', 'TET2', 'OPTN', 'TBK1', 'GRN', 'UNC13A',  'TMEM106B')
 # Number of base pairs for which variants are called across the gene 
 gene_len_df <- data.frame(
   gene = genes,
-  gene_length = c(TARDBP = 1099, OPTN = 1733, TBK1 = 1729, GRN = 1532, UNC13A = 4426, TET2= 4291, TMEM106B = 806)[genes])
+  gene_length = c(TARDBP = 1099, OPTN = 1733, TBK1 = 1841, GRN = 1471, UNC13A = 4426, TET2= 4291, TMEM106B = 806)[genes])
 
 dd_list <- lapply(files, function(f) {
   gene <- sub("_Coding_variants\\.tsv$", "", basename(f))
